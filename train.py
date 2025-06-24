@@ -77,3 +77,5 @@ if __name__ == "__main__":
     )
 
     trainer_stats = trainer.train()
+
+    # python train.py --gr_acc 4 --num_epoch 10 --output_dir output4 --max_seq_len 256 --quant 8 --lr_type linear --disabled_datasets 0 1 --limit_samples 100000
