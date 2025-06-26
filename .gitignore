@@ -4,4 +4,6 @@ __pycache__/
 datasets/
 output*/
 .vscode/
+.env
+.handler-saves
 

@@ -1,20 +1,10 @@
 import os
 from datasets import load_dataset, load_from_disk, Dataset
 from sklearn.model_selection import train_test_split
+from support import END_HEADER_TOKEN, EOT_TOKEN, START_HEADER_TOKEN, SYSTEM_START_PROMT
 
 
 class MDataset:
-    BEGIN_TOKEN: str = "<|begin_of_text|>"
-    START_PROMT: str = "You are a coach assistant who must help the user solve his problems using your knowledge."
-    EOT_TOKEN: str = "<|eot_id|>"
-    START_HEADER_TOKEN: str = "<|start_header_id|>"
-    END_HEADER_TOKEN: str = "<|end_header_id|>\n\n"
-    SYSTEM_NAME: str = "system"
-    ASSISTANT_NAME: str = "assistant"
-    USER_NAME: str = "user"
-    SYSTEM_START_PROMT: str = BEGIN_TOKEN + START_HEADER_TOKEN + \
-        SYSTEM_NAME + END_HEADER_TOKEN + START_PROMT + EOT_TOKEN
-
     DATASETS: dict[str, str] = {
         "calvindelima/life_coaching_conversations": "life_coaching_conversations",
         "drublackberry/hbr-coaching-real-leaders": "hbr_coaching_real_leaders",
@@ -33,13 +23,13 @@ class MDataset:
     def chats_to_text_and_append(self, chats: list[dict[str, str]]) -> int:
         statr_number_of_samples = len(self.data)
         for chat in chats:
-            text = MDataset.SYSTEM_START_PROMT
+            text = SYSTEM_START_PROMT
             for replic in chat:
                 if replic["role"] == "system":
                     continue
-                text += MDataset.START_HEADER_TOKEN + \
-                    replic["role"] + MDataset.END_HEADER_TOKEN + \
-                    replic["content"] + MDataset.EOT_TOKEN
+                text += START_HEADER_TOKEN + \
+                    replic["role"] + END_HEADER_TOKEN + \
+                    replic["content"] + EOT_TOKEN
             if len(self.data) < self.limit_of_samples:
                 self.data.append(text)
         return len(self.data) - statr_number_of_samples
@@ -110,8 +100,3 @@ class MDataset:
         train, test = train_test_split(
             self.data, test_size=0.1, random_state=42)
         return Dataset.from_dict({"text": train}), Dataset.from_dict({"text": test})
-
-
-if __name__ == "__main__":
-    d = MDataset()
-    print(d.split_to_train_test())
